@@ -1,14 +1,37 @@
-import { component$ } from "@builder.io/qwik";
-import type { DocumentHead } from "@builder.io/qwik-city";
+import { component$, useVisibleTask$ } from "@builder.io/qwik";
+import { server$, type DocumentHead } from "@builder.io/qwik-city";
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+export const fetchStuff = server$(async function () {
+  await sleep(5000);
+
+  return {
+    success: true,
+  };
+});
 
 export default component$(() => {
+  useVisibleTask$(async () => {
+    console.log("started fetch");
+    await fetchStuff();
+    console.log("ended fetch");
+  });
+
   return (
     <>
-      <h1>Hi 👋</h1>
+      <p>Refresh the page before the 'fetchStuff' request completes.</p>
       <p>
-        Can't wait to see what you build with qwik!
-        <br />
-        Happy coding.
+        See{" "}
+        <em>
+          "Error [ERR_STREAM_DESTROYED]: Cannot call write after a stream was
+          destroyed"
+        </em>{" "}
+        in server console.
       </p>
     </>
   );
